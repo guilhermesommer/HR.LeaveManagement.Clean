@@ -10,13 +10,15 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequest.Commands.CancelLe
     public class CancelLeaveRequestCommandHandler : IRequestHandler<CancelLeaveRequestCommand, Unit>
     {
         private readonly ILeaveRequestRepository _leaveRequestRepository;
+        private readonly ILeaveAllocationRepository _leaveAllocationRepository;
         private readonly IEmailSender _emailSender;
         private readonly IAppLogger<CancelLeaveRequestCommandHandler> _appLogger;
 
-        public CancelLeaveRequestCommandHandler(ILeaveRequestRepository leaveRequestRepository, IEmailSender emailSender,
-            IAppLogger<CancelLeaveRequestCommandHandler> appLogger)
+        public CancelLeaveRequestCommandHandler(ILeaveRequestRepository leaveRequestRepository, ILeaveAllocationRepository leaveAllocationRepository,
+            IEmailSender emailSender, IAppLogger<CancelLeaveRequestCommandHandler> appLogger)
         {
             this._leaveRequestRepository = leaveRequestRepository;
+            this._leaveAllocationRepository = leaveAllocationRepository;
             this._emailSender = emailSender;
             this._appLogger = appLogger;
         }
@@ -31,9 +33,17 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequest.Commands.CancelLe
             }
 
             leaveRequest.Cancelled = true;
-            //await _leaveRequestRepository.UpdateAsync(leaveRequest);
+            await _leaveRequestRepository.UpdateAsync(leaveRequest);
 
             // if already approved, re-evalute the employee's allocations for the leave type
+            if (leaveRequest.Approved == true)
+            {
+                int daysRequested = (int)(leaveRequest.EndDate - leaveRequest.StartDate).TotalDays;
+                var allocation = await _leaveAllocationRepository.GetUserAllocations(leaveRequest.RequestingEmployeeId, leaveRequest.LeaveTypeId);
+                allocation.NumberOfDays += daysRequested;
+
+                await _leaveAllocationRepository.UpdateAsync(allocation);
+            }
 
             try
             {

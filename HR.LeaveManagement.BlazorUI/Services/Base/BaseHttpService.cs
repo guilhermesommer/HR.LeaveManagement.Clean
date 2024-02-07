@@ -47,7 +47,8 @@ namespace HR.LeaveManagement.BlazorUI.Services.Base
         {
             if (await _localStorage.ContainKeyAsync("token"))
             {
-                _client.HttpClient.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await _localStorage.GetItemAsync<string>("token"));
+                _client.HttpClient.DefaultRequestHeaders.Authorization = 
+                    new AuthenticationHeaderValue("Bearer", await _localStorage.GetItemAsync<string>("token"));
             }
         }
     }

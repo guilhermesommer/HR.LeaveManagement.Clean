@@ -1,6 +1,8 @@
 using Blazored.LocalStorage;
+using Blazored.Toast;
 using HR.LeaveManagement.BlazorUI;
 using HR.LeaveManagement.BlazorUI.Contracts;
+using HR.LeaveManagement.BlazorUI.Handlers;
 using HR.LeaveManagement.BlazorUI.Providers;
 using HR.LeaveManagement.BlazorUI.Services;
 using HR.LeaveManagement.BlazorUI.Services.Base;
@@ -15,11 +17,16 @@ builder.RootComponents.Add<HeadOutlet>("head::after");
 
 //builder.Services.AddScoped(sp => new HttpClient { BaseAddress = new Uri(builder.HostEnvironment.BaseAddress) });
 
-// Microsoft.Extension.Http nuget package
-builder.Services.AddHttpClient<IClient, Client>(client => client.BaseAddress = new Uri("https://localhost:7095"));
+builder.Services.AddTransient<JwtAuthorizationMessageHandler>();
 
+// Microsoft.Extension.Http nuget package
+builder.Services.AddHttpClient<IClient, Client>(client => client.BaseAddress = new Uri("https://localhost:7095"))
+    .AddHttpMessageHandler<JwtAuthorizationMessageHandler>();
+
+builder.Services.AddBlazoredToast();
 builder.Services.AddBlazoredLocalStorage();
 builder.Services.AddAuthorizationCore();
+builder.Services.AddScoped<ApiAuthenticationStateProvider>();
 builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
 
 builder.Services.AddScoped<ILeaveTypeService, LeaveTypeService>();

@@ -1,9 +1,14 @@
 ﻿using HR.LeaveManagement.Application.Features.LeaveType.Queries.GeAllLeaveType;
+using HR.LeaveManagement.Application.Models.Identity;
 
 namespace HR.LeaveManagement.Application.Features.LeaveRequest.Queries.GetLeaveRequestList
 {
     public class LeaveRequestListDto
     {
+        public int Id { get; set; }
+
+        public Employee Employee { get; set; }
+
         public string RequestingEmployeeId { get; set; }
 
         public LeaveTypeDto LeaveType { get; set; }
@@ -15,5 +20,7 @@ namespace HR.LeaveManagement.Application.Features.LeaveRequest.Queries.GetLeaveR
         public DateTime EndDate { get; set; }
 
         public bool? Approved { get; set; }
+
+        public bool Cancelled { get; set; }
     }
 }

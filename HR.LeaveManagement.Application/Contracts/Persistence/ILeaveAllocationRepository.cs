@@ -14,5 +14,6 @@ public interface ILeaveAllocationRepository : IGenericRepository<LeaveAllocation
 
     Task AddAllocations(List<LeaveAllocation> allocations);
 
-    Task<List<LeaveAllocation>> GetUserAllocations(string userId, int leaveTypeId);
+    //Task<List<LeaveAllocation>> GetUserAllocations(string userId, int leaveTypeId);
+    Task<LeaveAllocation> GetUserAllocations(string userId, int leaveTypeId);
 }
